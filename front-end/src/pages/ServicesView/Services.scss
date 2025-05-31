@@ -1,11 +1,128 @@
-.Services {
-  padding: 70px 90px;
-}
-
 .ServicesMain {
+  padding: 70px 90px;
   display: flex;
   flex-direction: column;
   gap: 30px;
+}
+
+.StartFromScratchMain {
+  padding: 70px 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.GenerateCaptionMain {
+  width: 430px;
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.InputTopic {
+  width: calc(100% - 24px);
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0px 0px 1px 0px #171a1f12;
+  border: 1px solid rgb(201, 201, 201);
+  outline: none;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0px;
+}
+.TopicAndSound {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.TypesOfCaption {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.RowButtonGenerateCaption {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
+.ButtonGenerateCaption {
+  width: 174px;
+  height: 49px;
+  border-radius: 4px;
+  border-width: 1px;
+  background-color: #e8edff;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 23px;
+  letter-spacing: 0%;
+  &:focus {
+    outline: none;
+  }
+}
+
+.ListCaptionsGenerated {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.Captions {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 16px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 1px 0px #171a1f12;
+  box-shadow: 0px 0px 2px 0px #171a1f80;
+}
+
+.TextCaptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.TitleCaption {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.ContentCaption {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0%;
+}
+
+.RowButtonListCaptions {
+  display: flex;
+  justify-content: end;
+  gap: 12px;
+}
+
+.ButtonListCaptions {
+  width: 57px;
+  height: 31px;
+  border-radius: 4px;
+  border-width: 1px;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 23px;
+  letter-spacing: 0%;
+  padding: 0px !important;
+}
+
+.ShareButton {
+  background-color: #b6eff2;
+}
+
+.SaveButton {
+  background-color: #eeebe8;
 }
 
 .ListOptionServices {
@@ -54,7 +171,7 @@
   padding: 16px 10px;
   cursor: pointer;
   align-items: center;
-  gap: 10px
+  gap: 10px;
 }
 
 .OptionTitle {

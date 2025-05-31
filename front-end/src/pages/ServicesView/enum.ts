@@ -5,9 +5,9 @@ export enum STEP_SERVICES {
 }
 
 export enum SOCIAL_POST {
-    FACEBOOK = 'facebook',
+    FACEBOOK = 'Facebook',
     INSTAGRAM = 'Instagram',
-    TWITTER = 'Instagram',
+    TWITTER = 'Twitter',
 }
 
 export enum STEP_START_FROM_SCRATCH {

@@ -30,10 +30,10 @@ const optionSocialPost = [
 const StartFromScratch = () => {
   const [socialPost, setSocialPost] = useState<SOCIAL_POST>();
 
-  if (socialPost) return <GenerateCaption />;
+  if (socialPost) return <GenerateCaption socialType={socialPost} />;
 
   const renderStartFromScratch = () => (
-    <div className="ServicesMain">
+    <div className="StartFromScratchMain">
       <div className="ContentHeaderSocial">
         <h2>Generate unique captions from scratch</h2>
         <div className="ContentSocial">
