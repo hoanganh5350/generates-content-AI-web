@@ -11,6 +11,7 @@
   height: 100vh;
   box-sizing: border-box;
   z-index: 100;
+  position: relative;
 }
 
 .logo {
@@ -30,6 +31,7 @@
   padding: 12px;
   display: flex;
   align-items: center;
+  color: variables.$color-text-menu;
   gap: 10px;
   font-weight: 500;
   font-size: 14px;
@@ -44,4 +46,13 @@
 
 .hyperLink {
   background-color: variables.$menu-active;
+}
+
+.logout {
+  position: absolute;
+  bottom: 24px;
+  width: calc(100% - 56px);
+  &:hover {
+    background-color: variables.$menu-hover;
+  }
 }
