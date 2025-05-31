@@ -1,9 +1,9 @@
 import { useState } from "react";
 import "../Services.scss";
 import { SOCIAL_POST } from "../enum";
-import Facebook from "./facebookIocn";
-import Instagram from "./instagramIocn";
-import Twitter from "./TwitterIocn";
+import Facebook from "./facebookIcon";
+import Instagram from "./instagramIcon";
+import Twitter from "./twitterIcon";
 import GenerateCaption from "./GenerateCaption";
 
 const optionSocialPost = [
