@@ -1,0 +1,47 @@
+@use "../../styles/config" as config;
+@use "../../styles/variables" as variables;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 43px;
+  width: config.$width-sidebar;
+  background-color: variables.$background-sidebar;
+  padding: 16px;
+  height: 100vh;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+.logo {
+  color: variables.$color-text-header-sidebar;
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 36px;
+  letter-spacing: 0%;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.link.active {
+  background-color: variables.$menu-active;
+}
+
+.hyperLink {
+  background-color: variables.$menu-active;
+}
