@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { post } from "../../api/http";
 
 interface AuthState {
   phone: string | null;
@@ -17,13 +18,10 @@ const initialState: AuthState = {
 export const requestOTP = createAsyncThunk(
   "auth/requestOTP",
   async (phone: string) => {
-    //TODO: Fake API request OTP from phone input
-    const response = await new Promise<string>((resolve) =>
-      setTimeout(() => {
-        resolve(phone);
-      }, 1000)
-    );
-    if (!response) throw new Error("Gửi OTP thất bại");
+    const response = await post<{ accessCode: string }>("/auth/create-code", {
+      phoneNumber: phone,
+    });
+    if (!response.accessCode) throw new Error("Gửi OTP thất bại");
     return phone;
   }
 );
@@ -32,16 +30,11 @@ export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
   async ({ phone, otp }: { phone: string; otp: string }) => {
     //TODO: Fake API verify
-    const response = await new Promise<string>((resolve, reject) => {
-      setTimeout(() => {
-        if (otp === "1234") {
-          resolve(phone);
-        } else {
-          reject(new Error("OTP không đúng"));
-        }
-      }, 1000);
+    const response = await post<{ success: boolean }>("/auth/validate-code", {
+      phoneNumber: phone,
+      accessCode: otp,
     });
-    if (!response) throw new Error("OTP không đúng");
+    if (!response?.success || !response) throw new Error("OTP không đúng");
     localStorage.setItem("phone", phone);
     return phone;
   }

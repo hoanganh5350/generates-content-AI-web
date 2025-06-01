@@ -8,7 +8,7 @@ export const createNewAccessCode = async (req: Request, res: Response) => {
   const code = generateAccessCode();
   await firestore.collection('accessCodes').doc(phoneNumber).set({ code });
   await sendSMS(phoneNumber, `Your access code is: ${code}`);
-  res.json({ accessCode: code });
+  res.status(200).json({ accessCode: code });
 };
 
 export const validateAccessCode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -17,7 +17,7 @@ export const validateAccessCode = async (req: Request, res: Response, next: Next
     const doc = await firestore.collection('accessCodes').doc(phoneNumber).get();
     if (doc.exists && doc.data()?.code === accessCode) {
       await firestore.collection('accessCodes').doc(phoneNumber).set({ code: '' });
-      res.json({ success: true });
+      res.status(200).json({ success: true });
       return; // kết thúc hàm, KHÔNG return res.json(...)
     }
     res.status(400).json({ success: false });
