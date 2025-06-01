@@ -1,54 +1,117 @@
-# React + TypeScript + Vite
+A ReactJS project using Vite, SCSS, Redux Toolkit, React Router, structured with a feature-based architecture, making it highly scalable and maintainable.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+📁 Project Structure
 
-Currently, two official plugins are available:
+my-app/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/             # Images, icons, fonts, etc.
+│   ├── components/         # Reusable UI components (Button, Modal, ...)
+│   ├── features/           # Each feature is a module (feature-based pattern)
+│   │   └── auth/
+│   │       └── authSlice.js    # Redux slice or feature logic
+│   ├── hooks/              # Custom reusable hooks (useAuth, useFetch, ...)
+│   ├── layouts/            # Main layout components (AdminLayout, AuthLayout, ...)
+│   ├── pages/              # Route-mapped pages (Home, About, ...)
+│   ├── routes/             # Route definitions (react-router-dom)
+│   ├── services/           # API requests (axios instance, service layer)
+│   ├── store/              # Redux store or Zustand, Recoil, etc.
+│   ├── styles/             # SCSS variables, global styles, theme, ...
+│   ├── utils/              # Utility functions (formatDate, validateEmail, ...)
+│   ├── App.jsx             # Root component of the app
+│   └── main.jsx            # Entry point (ReactDOM.createRoot)
+├── .env                    # Environment variables (e.g., VITE_API_URL)
+├── package.json
+└── vite.config.js          # Vite configuration
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔧 Setup
 
-## Expanding the ESLint configuration
+# 1. Clone the project then
+cd front-end
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# 2. Install dependencies
+npm install
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
+# 3. Start development server
+npm run dev
+
+🌐 Environment Variables (.env)
+
+VITE_API_URL=http://localhost:3000
+
+Access in code via: import.meta.env.VITE_API_URL
+
+📦 Dependencies
+
+Technology
+
+Description
+
+React 18
+
+UI library
+
+Vite
+
+Fast dev server & bundler
+
+React Router DOM
+
+Routing system
+
+Redux Toolkit
+
+Feature-based state management
+
+Axios
+
+API request handling
+
+SCSS
+
+Styling with variables, nesting, etc.
+
+Ant Design (opt.)
+
+UI Component Library (if used)
+
+🛠️ Redux Store Setup (src/store/index.js)
+
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '../features/auth/authSlice';
+
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
   },
-})
-```
+});
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🧪 Production Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+npm run build
+npm run preview
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+📜 Scripts
+
+Command
+
+Description
+
+npm run dev
+
+Start dev server
+
+npm run build
+
+Build for production
+
+npm run preview
+
+Preview production build
+
+📌 Notes
+
+Follows feature-based architecture: each feature is isolated and scalable.
+
+Easy to extend with i18n, unit tests, authentication, SSR, etc.
