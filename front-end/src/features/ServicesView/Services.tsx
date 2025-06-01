@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import "./Services.scss";
 import { STEP_SERVICES } from "./enum";
 import StartFromScratch from "./StartFromScratch/StartFromScratch";
+import GetInspried from "./GetInspried/GetInspried";
 
 const optionServices = [
   {
@@ -48,7 +49,7 @@ const Services = () => {
         return <StartFromScratch />;
       }
       case STEP_SERVICES.GET_INSPRIED: {
-        return <h2>services</h2>;
+        return <GetInspried />;
       }
     }
   }, [stepServices]);

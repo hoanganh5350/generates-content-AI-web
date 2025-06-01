@@ -205,3 +205,101 @@
   display: flex;
   flex-direction: column;
 }
+
+.GetInspried {
+  padding: 70px 90px;
+  display: flex;
+  flex-direction: column;
+}
+
+.GetInspriedContainer {
+  width: 449px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.TypingTopic {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.SuggestInspried {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.InputTopicInspried {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.TitleInput {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+}
+
+.ListIdeaGenerated {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.SuggestIdeaGenerated {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0px;
+}
+
+.IdeaGeneratedItem {
+  display: flex;
+  border-radius: 6px;
+  border-width: 1px;
+  padding: 20px 10px;
+  border: 1px solid rgb(216, 216, 216);
+  box-shadow: 0px 0px 1px 0px rgb(163, 163, 163);
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  cursor: pointer;
+}
+
+.GenerateCaptionFromIdea {
+  width: 437px;
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.IdeaAI {
+  width: calc(100% - 24px);
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0px 0px 1px 0px #171a1f12;
+  border: 1px solid rgb(201, 201, 201);
+  outline: none;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0px;
+}
+
+.ButtonGenerateCaptionFromIdea {
+  margin-top: 28px;
+}
+
+.TitleListCaptionsGenerated {
+  margin-top: 30px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 0%;
+}
