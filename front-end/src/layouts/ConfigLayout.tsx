@@ -1,5 +1,5 @@
-import Profile from "../pages/ProfileView/Profile";
-import Services from "../pages/ServicesView/Services";
+import Profile from "../features/ProfileView/Profile";
+import Services from "../features/ServicesView/Services";
 import { KEY_SCREENS } from "./enums";
 
 export const MenuLayout = [
