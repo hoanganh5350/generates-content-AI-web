@@ -96,28 +96,30 @@ const Profile = () => {
     <div className="Profile">
       <h2>Saved Content</h2>
       <div className="SaveContentContainer">
-        {loading
-          ? "loading data..."
-          : dataConvertRender &&
-            dataConvertRender.length > 0 &&
-            dataConvertRender.map((el) => (
-              <div key={el.topic} className="BlockContent">
-                <div className="HeaderTitle">{el.topic}</div>
-                <div className="ListContentContainer">
-                  {el.content.length > 0 &&
-                    el.content.map((item, idx) => (
-                      <ContentItem
-                        key={`${item.text}${idx}`}
-                        className={"ContentItemGrid"}
-                        content={item.text}
-                        onShare={() => handleShare(item.id)}
-                        onUnsave={() => handleUnSave(item.id, item.text)}
-                        saving={loadingItem}
-                      />
-                    ))}
-                </div>
+        {loading ? (
+          "loading data..."
+        ) : dataConvertRender && dataConvertRender.length > 0 ? (
+          dataConvertRender.map((el) => (
+            <div key={el.topic} className="BlockContent">
+              <div className="HeaderTitle">{el.topic}</div>
+              <div className="ListContentContainer">
+                {el.content.length > 0 &&
+                  el.content.map((item, idx) => (
+                    <ContentItem
+                      key={`${item.text}${idx}`}
+                      className={"ContentItemGrid"}
+                      content={item.text}
+                      onShare={() => handleShare(item.id)}
+                      onUnsave={() => handleUnSave(item.id, item.text)}
+                      saving={loadingItem}
+                    />
+                  ))}
               </div>
-            ))}
+            </div>
+          ))
+        ) : (
+          <div className="HeaderTitle">No data available</div>
+        )}
       </div>
     </div>
   );
