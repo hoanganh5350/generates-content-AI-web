@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Env files
+.env
+
+# Firebase service account key
+config/firebaseServiceAccountKey.json
+
+# Logs
+logs/
+*.log
+
+# Output
+dist/
+build/
+
+# IDE & system files
+.vscode/
+.DS_Store
+*.swp
+*.swo
+*.bak
+
+# OS-generated files
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
