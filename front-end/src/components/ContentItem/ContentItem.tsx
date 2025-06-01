@@ -5,13 +5,14 @@ interface ContentItemProps {
   title?: string;
   className?: string;
   content: string;
+  saving?: boolean
   onShare: () => void;
   onSave?: () => void;
   onUnsave?: () => void;
 }
 
 const ContentItem = (props: ContentItemProps) => {
-  const { title, className, content, onShare, onSave, onUnsave } = props;
+  const { title, className, content, saving, onShare, onSave, onUnsave } = props;
 
   const handleShare = () => {
     onShare();
@@ -41,7 +42,7 @@ const ContentItem = (props: ContentItemProps) => {
             className="ButtonContentItem SaveButton"
             onClick={() => handleSave()}
           >
-            Save
+            {saving ? 'Saving...' : 'Save'}
           </button>
         )}
         {!!onUnsave && (
