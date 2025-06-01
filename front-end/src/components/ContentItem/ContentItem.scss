@@ -1,0 +1,60 @@
+@use "../../styles/config" as config;
+@use "../../styles/variables" as variables;
+
+.ContentItem {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 16px;
+  border-radius: 4px;
+  border: 1px solid rgb(198, 198, 198);
+  box-shadow: 0px 0px 1px 0px #171a1f12;
+  box-shadow: 0px 0px 2px 0px #171a1f80;
+}
+
+.TextContentItem {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.TitleContentItem {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.ContentContentItem {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0%;
+}
+
+.RowButtonContentItem {
+  display: flex;
+  justify-content: end;
+  gap: 12px;
+}
+
+.ButtonContentItem {
+  width: 57px;
+  height: 31px;
+  border-radius: 4px;
+  border-width: 1px;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 23px;
+  letter-spacing: 0%;
+  padding: 0px !important;
+}
+
+.ShareButton {
+  background-color: #b6eff2;
+}
+
+.SaveButton {
+  background-color: #eeebe8;
+}
+
+
+

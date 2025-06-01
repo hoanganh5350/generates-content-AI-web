@@ -2,6 +2,7 @@ import { useState } from "react";
 import ModalSelect from "../../../components/ModalSelect/ModalSelect";
 import "../Services.scss";
 import { SOCIAL_POST } from "../enum";
+import ContentItem from "../../../components/ContentItem/ContentItem";
 
 interface GenerateCaptionProps {
   socialType?: SOCIAL_POST;
@@ -104,26 +105,13 @@ const GenerateCaption = (props: GenerateCaptionProps) => {
         <div className="ListCaptionsGenerated">
           <h2>Captions generated for you</h2>
           {listCaptionsGenerated.map((el, idx) => (
-            <div key={idx} className="Captions">
-              <div className="TextCaptions">
-                <div className="TitleCaption">{el.title}</div>
-                <div className="ContentCaption">{el.content}</div>
-              </div>
-              <div className="RowButtonListCaptions">
-                <button
-                  className="ButtonListCaptions ShareButton"
-                  onClick={() => handleShareCaptions(el)}
-                >
-                  Share
-                </button>
-                <button
-                  className="ButtonListCaptions SaveButton"
-                  onClick={() => handleSaveCaptions(el)}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
+            <ContentItem
+              key={idx}
+              title={el.title}
+              content={el.content}
+              onShare={() => handleShareCaptions(el)}
+              onSave={() => handleSaveCaptions(el)}
+            />
           ))}
         </div>
       )}

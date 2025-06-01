@@ -1,3 +1,31 @@
 .Profile {
-    padding: 80px 90px;
+  padding: 70px 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.SaveContentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.BlockContent {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.HeaderTitle {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 28px;
+  letter-spacing: 0%;
+}
+
+.ListContentContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px; /* Khoảng cách giữa các item */
 }

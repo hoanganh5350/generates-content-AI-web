@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import "../Services.scss";
+import ContentItem from "../../../components/ContentItem/ContentItem";
 
 interface CreateCaptionFromIdeaProps {
   ideaGeneratedFromAI: string;
@@ -23,7 +24,7 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
   const [listCaptionsGenerated, setListCaptionsGenerated] = useState<any[]>([]);
 
   const handelGenerateCaption = () => {
-    setListCaptionsGenerated(listCaptionsGeneratedFake)
+    setListCaptionsGenerated(listCaptionsGeneratedFake);
   };
 
   const handleShareCaptions = (data: any) => {
@@ -48,28 +49,17 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
       </div>
       {listCaptionsGenerated && listCaptionsGenerated.length > 0 && (
         <div className="ListCaptionsGenerated">
-          <div className="TitleListCaptionsGenerated">Captions generated for you</div>
+          <div className="TitleListCaptionsGenerated">
+            Captions generated for you
+          </div>
           {listCaptionsGenerated.map((el, idx) => (
-            <div key={idx} className="Captions">
-              <div className="TextCaptions">
-                <div className="TitleCaption">{el.title}</div>
-                <div className="ContentCaption">{el.content}</div>
-              </div>
-              <div className="RowButtonListCaptions">
-                <button
-                  className="ButtonListCaptions ShareButton"
-                  onClick={() => handleShareCaptions(el)}
-                >
-                  Share
-                </button>
-                <button
-                  className="ButtonListCaptions SaveButton"
-                  onClick={() => handleSaveCaptions(el)}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
+            <ContentItem
+              key={idx}
+              title={el.title}
+              content={el.content}
+              onShare={() => handleShareCaptions(el)}
+              onSave={() => handleSaveCaptions(el)}
+            />
           ))}
         </div>
       )}
