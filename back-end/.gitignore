@@ -5,7 +5,7 @@ node_modules/
 .env
 
 # Firebase service account key
-config/firebaseServiceAccountKey.json
+src/config/firebaseServiceAccountKey.json
 
 # Logs
 logs/
