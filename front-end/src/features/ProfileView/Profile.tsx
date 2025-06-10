@@ -47,6 +47,8 @@ const Profile = () => {
       return acc;
     }, []);
   }, [dataContentSave]);
+  console.log(dataContentSave);
+  console.log(dataConvertRender);
   const handleShare = (data: any) => {
     console.log("Share", data);
   };
@@ -60,9 +62,8 @@ const Profile = () => {
       if (response && response.success) {
         setDataContentSave((prev) => {
           const newData = [...prev];
-          const itemUnsave = newData.find((item) => item.id === idContent);
-          itemUnsave?.data.filter((item) => item !== content);
-          return newData;
+          const itemUnsave = newData.filter((item) => item.id !== idContent);
+          return itemUnsave;
         });
       }
     } catch (error) {
@@ -76,7 +77,9 @@ const Profile = () => {
     setLoading(true);
     try {
       const response = await get<DataContentSave[]>(
-        `/content/user-contents?phone_number=${localStorage.getItem("phone")}`
+        `/content/user-contents?phone_number=${encodeURIComponent(
+          localStorage.getItem("phone") as string
+        )}`
       );
       if (response && Array.isArray(response) && response.length > 0) {
         setDataContentSave(response);
