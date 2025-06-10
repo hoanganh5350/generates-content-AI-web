@@ -1,5 +1,5 @@
 import express from 'express';
-import { createNewAccessCode, validateAccessCode } from '../controllers/auth.controller';
+import { createNewAccessCode, validateAccessCode, fakeCreateAccessCode, fakeVerifyAccessCode } from '../controllers/auth.controller';
 
 const router = express.Router();
 

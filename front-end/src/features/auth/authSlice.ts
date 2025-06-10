@@ -18,10 +18,15 @@ const initialState: AuthState = {
 export const requestOTP = createAsyncThunk(
   "auth/requestOTP",
   async (phone: string) => {
-    const response = await post<{ accessCode: string }>("/auth/create-code", {
+    const response = await post<{
+      success: boolean;
+      status?: string;
+      error?: string;
+      code?: string;
+    }>("/auth/create-code", {
       phoneNumber: phone,
     });
-    if (!response.accessCode) throw new Error("Gửi OTP thất bại");
+    if (!response.success || response.error) throw new Error(response.error);
     return phone;
   }
 );
@@ -29,12 +34,18 @@ export const requestOTP = createAsyncThunk(
 export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
   async ({ phone, otp }: { phone: string; otp: string }) => {
-    //TODO: Fake API verify
-    const response = await post<{ success: boolean }>("/auth/validate-code", {
+    const response = await post<{
+      success: boolean;
+      message?: string;
+      error?: string;
+    }>("/auth/validate-code", {
       phoneNumber: phone,
       accessCode: otp,
     });
-    if (!response?.success || !response) throw new Error("OTP không đúng");
+    if (!response || !response.success || response.error)
+      throw new Error(
+        response.error ?? response.message ?? "Phone verifY failed !"
+      );
     localStorage.setItem("phone", phone);
     return phone;
   }
