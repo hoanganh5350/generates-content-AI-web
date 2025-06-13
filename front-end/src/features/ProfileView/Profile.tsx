@@ -23,10 +23,10 @@ type GroupedContent = {
 
 const Profile = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingItem, setLoadingItem] = useState<boolean>(false);
+  const [loadingItem, setLoadingItem] = useState<{load: boolean, id?: string}>({load: false});
   const [dataContentSave, setDataContentSave] = useState<DataContentSave[]>([]);
   const dataConvertRender = useMemo((): GroupedContent[] | undefined => {
-    return dataContentSave?.reduce<GroupedContent[]>((acc, currValue) => {
+    const newDataFilter = dataContentSave?.reduce<GroupedContent[]>((acc, currValue) => {
       const existingTopic = acc.find((item) => item.topic === currValue.topic);
 
       if (!existingTopic) {
@@ -46,6 +46,8 @@ const Profile = () => {
       }
       return acc;
     }, []);
+
+    return newDataFilter.sort((a, b) => a.topic.length - b.topic.length)
   }, [dataContentSave]);
   console.log(dataContentSave);
   console.log(dataConvertRender);
@@ -53,8 +55,8 @@ const Profile = () => {
     console.log("Share", data);
   };
 
-  const handleUnSave = async (idContent: string, content: string) => {
-    setLoadingItem(true);
+  const handleUnSave = async (idContent: string) => {
+    setLoadingItem({load: true, id: idContent});
     try {
       const response = await post<{ success: boolean }>("/content/unsave", {
         captionId: idContent,
@@ -69,7 +71,7 @@ const Profile = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoadingItem(false);
+      setLoadingItem({load: true, id: undefined});
     }
   };
 
@@ -113,8 +115,8 @@ const Profile = () => {
                       className={"ContentItemGrid"}
                       content={item.text}
                       onShare={() => handleShare(item.id)}
-                      onUnsave={() => handleUnSave(item.id, item.text)}
-                      saving={loadingItem}
+                      onUnsave={() => handleUnSave(item.id)}
+                      saving={loadingItem.load && loadingItem.id === item.id}
                     />
                   ))}
               </div>

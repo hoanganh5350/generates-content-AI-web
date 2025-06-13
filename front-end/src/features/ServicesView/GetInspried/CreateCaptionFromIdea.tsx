@@ -25,7 +25,7 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
   const { ideaGeneratedFromAI, topic } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [listCaptionsGenerated, setListCaptionsGenerated] = useState<any[]>([]);
-  const [loadingItem, setLoadingItem] = useState<boolean>(false);
+  const [loadingItem, setLoadingItem] = useState<{load: boolean, content?: string}>({load: false});
 
   const handelGenerateCaption = async () => {
     setLoading(true);
@@ -50,7 +50,7 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
   };
 
   const handleSaveCaptions = async (data: { content: string }) => {
-    setLoadingItem(true);
+    setLoadingItem({load: true, content: data.content});
     try {
       const response = await post<{ success: boolean }>("/content/save", {
         topic,
@@ -65,7 +65,7 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoadingItem(false);
+      setLoadingItem({load: false, content: undefined});
     }
   };
 
@@ -94,7 +94,7 @@ const CreateCaptionFromIdea = (props: CreateCaptionFromIdeaProps) => {
               content={el.content}
               onShare={() => handleShareCaptions(el)}
               onSave={() => handleSaveCaptions(el)}
-              saving={loadingItem}
+              saving={loadingItem.load && loadingItem.content === el.content}
             />
           ))}
         </div>

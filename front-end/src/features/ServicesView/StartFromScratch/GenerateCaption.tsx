@@ -37,7 +37,7 @@ const OPTIONS = [
 const GenerateCaption = (props: GenerateCaptionProps) => {
   const { socialType } = props;
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingItem, setLoadingItem] = useState<boolean>(false);
+  const [loadingItem, setLoadingItem] = useState<{load: boolean, content?: string}>({load: false});
   const [topic, setTopic] = useState<string>();
   const [sound, setSound] = useState<string>();
   const [listCaptionsGenerated, setListCaptionsGenerated] =
@@ -96,7 +96,7 @@ const GenerateCaption = (props: GenerateCaptionProps) => {
   };
 
   const handleSaveCaptions = async (data: { content: string }) => {
-    setLoadingItem(true);
+    setLoadingItem({load: true, content: data.content});
     try {
       const response = await post<{ success: boolean }>("/content/save", {
         topic,
@@ -111,7 +111,7 @@ const GenerateCaption = (props: GenerateCaptionProps) => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoadingItem(false);
+      setLoadingItem({load: false, content: undefined});
     }
   };
 
@@ -146,7 +146,7 @@ const GenerateCaption = (props: GenerateCaptionProps) => {
               content={el.content}
               onShare={() => handleShareCaptions(el)}
               onSave={() => handleSaveCaptions(el)}
-              saving={loadingItem}
+              saving={loadingItem.load && loadingItem.content === el.content}
             />
           ))}
         </div>

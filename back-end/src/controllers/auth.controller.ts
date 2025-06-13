@@ -6,7 +6,9 @@ import { generateAccessCode } from "../utils/generateCode";
 export const createNewAccessCode = async (req: Request, res: Response) => {
   try {
     const { phoneNumber } = req.body;
-    const code = generateAccessCode();
+    // const code = generateAccessCode();
+    //TODO: Hard otp for demo
+    const code = '123456';
     const expiresAt = Date.now() + 5 * 60 * 1000;
     await firestore.collection("accessCodes").doc(phoneNumber).set({
       code,
