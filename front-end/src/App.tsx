@@ -4,6 +4,7 @@ import Login from "./pages/Login/Login";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "./app/store";
 import { logout } from "./features/auth/authSlice";
+// import api, { setAccessToken } from "./api/axiosClient"; 
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();

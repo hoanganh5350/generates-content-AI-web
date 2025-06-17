@@ -1,4 +1,4 @@
-export async function post<T>(url: string, body: any): Promise<T> {
+export async function post<T>(url: string, body?: Record<string, unknown>): Promise<T> {
   const res = await fetch(import.meta.env.VITE_API_URL + url, {
     method: 'POST',
     headers: {
