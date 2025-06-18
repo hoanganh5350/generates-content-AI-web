@@ -1,11 +1,20 @@
 export interface UserPayload {
-  id: number;
-  username: string;
+  id: string;
+  userName: string;
+  email: string;
+  phone: string;
 }
 
 export interface RegisterPayload {
   userName: string;
   email: string;
   phone: string;
-  password: string
+  password: string;
+}
+
+export interface LoginPayload {
+  userName?: string;
+  email?: string;
+  phone?: string;
+  password: string;
 }

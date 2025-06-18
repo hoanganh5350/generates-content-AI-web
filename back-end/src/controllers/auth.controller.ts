@@ -1,3 +1,4 @@
+import { checkPassword } from "./../utils/hashPassword";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { sendSMS } from "../services/sms.service";
 import { firestore } from "../services/firestore.service";
@@ -64,10 +65,14 @@ export const validateAccessCode = async (
 export const register = async (req: Request, res: Response) => {
   try {
     const body: RegisterPayload = req.body;
-    const fieldsSingnature = ["userName", "email", "phone"];
+    if (!body.password) {
+      res.status(400).json({ success: false, message: "Missing password" });
+      return;
+    }
+    const fieldsSignature = ["userName", "email", "phone"];
     const snapshots = await Promise.all(
       Object.keys(req.body)
-        .filter((field: string) => fieldsSingnature.includes(field))
+        .filter((field: string) => fieldsSignature.includes(field))
         .map((key) =>
           firestore
             .collection("user")
@@ -87,19 +92,43 @@ export const register = async (req: Request, res: Response) => {
       return;
     }
     const password = await hashPassword(body.password);
-    await firestore
-      .collection("user")
-      .add({ ...body, password });
+    await firestore.collection("user").add({ ...body, password });
     res.status(200).json({ success: true });
   } catch (err) {
-    res.status(404).json({ success: false, err });
+    res.status(500).json({ success: false, message: "Sever error", err });
   }
 };
 
 //API login
 export const login = async (req: Request, res: Response) => {
   try {
-    const user: UserPayload = { id: 1, username: "admin" };
+    const { password: plainPassword, ...rest } = req.body;
+    const fieldLogin = Object.keys(rest)[0];
+    if (!fieldLogin) {
+      res.status(400).json({ message: "Thiếu thông tin đăng nhập" });
+      return;
+    }
+    const snapshot = await firestore
+      .collection("user")
+      .where(fieldLogin, "==", rest[fieldLogin])
+      .get();
+    if (snapshot.empty) {
+      res.status(404).json({ message: "Tài khoản không tồn tại" });
+      return;
+    }
+    const dataUser = snapshot.docs[0];
+    if (!dataUser?.exists) {
+      res.status(404).json({ message: "Người dùng không tồn tại" });
+      return;
+    }
+
+    const { password: hashedPassword, ...userInfo } = dataUser.data();
+    const verifyPassword = await checkPassword(plainPassword, hashedPassword);
+    if (!verifyPassword) {
+      res.status(401).json({ message: "Sai mat khau" });
+      return;
+    }
+    const user = { id: dataUser.id, ...userInfo } as UserPayload;
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
 
@@ -109,8 +138,12 @@ export const login = async (req: Request, res: Response) => {
       sameSite: "strict",
       path: "/refresh-token",
     });
-    res.json({ accessToken });
-  } catch (err) {}
+    res.status(200).json({ accessToken });
+    return;
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server" });
+    return;
+  }
 };
 
 //API check refreshToken
@@ -129,7 +162,9 @@ export const checkRefreshToken = async (req: Request, res: Response) => {
       }
       const accessToken = createAccessToken({
         id: user.id,
-        username: user.username,
+        userName: user.username,
+        email: user.email,
+        phone: user.phone,
       });
       res.json({ accessToken });
     });
