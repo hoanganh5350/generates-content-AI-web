@@ -1,14 +1,10 @@
-export async function post<T>(url: string, body?: Record<string, unknown>): Promise<T> {
-  const res = await fetch(import.meta.env.VITE_API_URL + url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+import api from "./axiosClient";
 
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+export async function post<T>(url: string, body?: Record<string, unknown>): Promise<T> {
+  const res = await api.post(import.meta.env.VITE_API_URL + url, body);
+
+  if (!res.data) throw new Error(await res.statusText);
+  return res.data;
 }
 
 export async function get<T>(url: string): Promise<T> {

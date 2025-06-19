@@ -62,6 +62,38 @@ export const validateAccessCode = async (
 };
 
 //API đăng ký user
+export const fetchFormRegister = async (req: Request, res: Response) => {
+  try {
+    const body: RegisterPayload = req.body;
+    const fieldsSignature = ["userName", "email", "phone"];
+    const snapshots = await Promise.all(
+      Object.keys(req.body)
+        .filter((field: string) => fieldsSignature.includes(field))
+        .map((key) =>
+          firestore
+            .collection("user")
+            .where(key, "==", req.body[key])
+            .get()
+            .then((snapshot) => ({ key, snapshot }))
+        )
+    );
+
+    const fieldExits = snapshots
+      .filter(({ snapshot }) => !snapshot.empty)
+      .map(({ key }) => key);
+    if (fieldExits.length > 0) {
+      res
+        .status(200)
+        .json({ success: false, message: JSON.stringify(fieldExits) });
+      return;
+    }
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Sever error", err });
+  }
+};
+
+//API đăng ký user
 export const register = async (req: Request, res: Response) => {
   try {
     const body: RegisterPayload = req.body;
@@ -134,9 +166,9 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "strict",
-      path: "/refresh-token",
+      path: "/auth/refresh-token",
     });
     res.status(200).json({ accessToken });
     return;
@@ -174,6 +206,6 @@ export const checkRefreshToken = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("refreshToken", { path: "/refresh-token" });
+  res.clearCookie("refreshToken", { path: "/auth/refresh-token" });
   res.sendStatus(204);
 };

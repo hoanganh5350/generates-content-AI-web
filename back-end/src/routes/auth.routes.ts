@@ -6,6 +6,7 @@ import {
   login,
   logout,
   validateAccessCode,
+  fetchFormRegister,
 } from "../controllers/auth.controller";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.post("/create-code", createNewAccessCode);
 router.post("/validate-code", validateAccessCode);
 
 router.post("/register", register)
+router.post("/fetchFormRegister", fetchFormRegister)
 router.post("/login", login);
 router.post("/refresh-token", checkRefreshToken);
 router.post("/logout", logout);

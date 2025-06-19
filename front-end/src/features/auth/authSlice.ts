@@ -1,7 +1,13 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { post } from "../../api/http";
 
 interface AuthState {
+  accessToken: string | null;
+  isRegister: boolean;
   phone: string | null;
   otpSent: boolean;
   loading: boolean;
@@ -9,6 +15,8 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
+  accessToken: null,
+  isRegister: false,
   phone: localStorage.getItem("phone") || null,
   otpSent: false,
   loading: false,
@@ -51,19 +59,87 @@ export const verifyOTP = createAsyncThunk(
   }
 );
 
+export const register = createAsyncThunk(
+  "auth/register",
+  async (bodyRegister: {
+    userName: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) => {
+    const response = await post<{
+      success: string;
+      message?: string;
+    }>("/auth/register", bodyRegister);
+    if (!response.success) throw new Error(response.message ?? "Loi sever");
+    return response.success;
+  }
+);
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (bodyLogin: {
+    userName?: string;
+    email?: string;
+    phone?: string;
+    password: string;
+  }) => {
+    const response = await post<{
+      accessToken: string;
+      message?: string;
+    }>("/auth/login", bodyLogin);
+    if (!response.accessToken) throw new Error("Invalid account or password");
+    localStorage.setItem("loggedIn", "true");
+    return response.accessToken;
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
-      localStorage.removeItem("phone");
-      state.phone = null;
-      state.otpSent = false;
-      state.error = null;
+    registerAction: (state) => {
+      state.isRegister = true;
+    },
+    setAccessToken(state, action: PayloadAction<string>) {
+      state.accessToken = action.payload;
+    },
+    clearAccessToken(state) {
+      state.accessToken = null;
+    },
+    switchModeRegister(state, action: PayloadAction<boolean>) {
+      state.isRegister = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
+      // Xử lý case register
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.loading = false;
+        state.isRegister = false;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        state.isRegister = true;
+        state.error = action.error.message || "register thất bại";
+      })
+      // Xử lý case login
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action: PayloadAction<string>) => {
+        state.accessToken = action.payload;
+        state.loading = false;
+      })
+      .addCase(login.rejected, (state) => {
+        state.loading = false;
+        state.error = "Invalid account or password";
+      })
       // Xử lý case khi nhập sđt để lấy otp
       .addCase(requestOTP.pending, (state) => {
         state.loading = true;
@@ -94,5 +170,10 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const {
+  registerAction,
+  setAccessToken,
+  clearAccessToken,
+  switchModeRegister,
+} = authSlice.actions;
 export default authSlice.reducer;

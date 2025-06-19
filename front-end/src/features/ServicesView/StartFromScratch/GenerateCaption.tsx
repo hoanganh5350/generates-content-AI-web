@@ -91,7 +91,7 @@ const GenerateCaption = (props: GenerateCaptionProps) => {
     }
   };
 
-  const handleShareCaptions = (data: any) => {
+  const handleShareCaptions = (data: Record<string, unknown>) => {
     console.log(data);
   };
 
