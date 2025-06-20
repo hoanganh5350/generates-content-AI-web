@@ -8,7 +8,7 @@ export async function post<T>(url: string, body?: Record<string, unknown>): Prom
 }
 
 export async function get<T>(url: string): Promise<T> {
-  const res = await fetch(import.meta.env.VITE_API_URL + url);
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  const res = await api.get(import.meta.env.VITE_API_URL + url);
+  if (!res.data) throw new Error(await res.statusText);
+  return res.data;
 }
