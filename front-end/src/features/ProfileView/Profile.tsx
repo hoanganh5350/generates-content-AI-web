@@ -49,9 +49,7 @@ const Profile = () => {
 
     return newDataFilter.sort((a, b) => a.topic.length - b.topic.length)
   }, [dataContentSave]);
-  console.log(dataContentSave);
-  console.log(dataConvertRender);
-  const handleShare = (data: any) => {
+  const handleShare = (data: string) => {
     console.log("Share", data);
   };
 
