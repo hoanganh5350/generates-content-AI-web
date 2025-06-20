@@ -170,7 +170,7 @@ export const login = async (req: Request, res: Response) => {
       sameSite: "strict",
       path: "/auth/refresh-token",
     });
-    res.status(200).json({ accessToken });
+    res.status(200).json({ accessToken, phone: user.phone });
     return;
   } catch (err) {
     res.status(500).json({ message: "Lỗi server" });

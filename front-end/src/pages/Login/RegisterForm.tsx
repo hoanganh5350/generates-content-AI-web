@@ -1,38 +1,28 @@
-import React, { Fragment, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import "./Login.scss";
 import Icon from "../../components/Icon/Icon";
-import { Button, Input, type InputRef } from "antd";
+import { Button } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../app/store";
 import { useFormik } from "formik";
 import {
+  isLoading,
+  register,
   requestOTP,
   switchModeRegister,
-  verifyOTP,
 } from "../../features/auth/authSlice";
-import { TYPE_INPUT } from "./constant";
-import {
-  Eye,
-  EyeSlash,
-  FileText,
-  Lock,
-  Person,
-  Telephone,
-} from "react-bootstrap-icons";
-import { validateValuesFromRegister } from "../helper";
-
-enum NAME_FORM_REGISTER {
-  USER_NAME = "userName",
-  EMAIL = "email",
-  PHONE = "phone",
-  PASSWORD = "password",
-}
+import { NAME_FORM, TYPE_INPUT } from "./constant";
+import { FileText, Lock, Person, Telephone } from "react-bootstrap-icons";
+import { validateValuesFromRegister, type MsgErr } from "../helper";
+import Input from "../../components/Input/Input";
+import { post } from "../../api/http";
 
 type ValueForm = {
-  [NAME_FORM_REGISTER.USER_NAME]?: string;
-  [NAME_FORM_REGISTER.EMAIL]?: string;
-  [NAME_FORM_REGISTER.PHONE]?: string;
-  [NAME_FORM_REGISTER.PASSWORD]?: string;
+  [NAME_FORM.USER_NAME]?: string;
+  [NAME_FORM.EMAIL]?: string;
+  [NAME_FORM.PHONE]?: string;
+  [NAME_FORM.PASSWORD]?: string;
 };
 
 const RegisterForm: React.FC = () => {
@@ -40,39 +30,49 @@ const RegisterForm: React.FC = () => {
   const { loading, error, otpSent } = useSelector(
     (state: RootState) => state.auth
   );
-
+  
   const elementsFormRegister = [
     {
-      name: NAME_FORM_REGISTER.USER_NAME,
+      name: NAME_FORM.USER_NAME,
       typeInput: TYPE_INPUT.TEXT,
-      placeholder: "Tên người dùng",
-      prefix: <FileText />,
+      placeholder: "User Name",
+      prefix: <FileText size={20} />,
+      type: "text",
     },
     {
-      name: NAME_FORM_REGISTER.EMAIL,
+      name: NAME_FORM.EMAIL,
       typeInput: TYPE_INPUT.TEXT,
       placeholder: "Email",
-      prefix: <Person />,
+      prefix: <Person size={20} />,
+      type: "text",
     },
     {
-      name: NAME_FORM_REGISTER.PHONE,
+      name: NAME_FORM.PHONE,
       typeInput: TYPE_INPUT.TEXT,
-      placeholder: "Số điện thoại",
+      placeholder: "Phone",
       prefix: <Telephone />,
+      type: "phone",
     },
     {
-      name: NAME_FORM_REGISTER.PASSWORD,
+      name: NAME_FORM.PASSWORD,
       typeInput: TYPE_INPUT.PASSWORD,
-      placeholder: "Mật khẩu",
-      prefix: <Lock />,
+      placeholder: "Password",
+      prefix: <Lock size={20} />,
+      type: "password",
     },
   ];
   const [otp, setOtp] = useState("");
+  const [fieldsErrorExit, setFieldsErrorExit] = useState<NAME_FORM[]>([]);
+  const [errorFields, setErrorFields] = useState<MsgErr[]>([]);
+  const firstTimeChangeForm = useRef<boolean>(false);
 
   const onSubmitForm = (values: ValueForm) => {
-    const validateValues = validateValuesFromRegister(values)
-    if(!validateValues.success) return;
-    dispatch(verifyOTP({ phone: values[NAME_FORM_REGISTER.PHONE] ?? "", otp }));
+    const validateValues = validateValuesFromRegister(values, fieldsErrorExit);
+    if (!validateValues.success && validateValues.errMsg) {
+      setErrorFields(validateValues.errMsg);
+      return;
+    }
+    dispatch(requestOTP(values[NAME_FORM.PHONE] ?? ""));
   };
 
   const formik = useFormik({
@@ -84,29 +84,73 @@ const RegisterForm: React.FC = () => {
     },
     onSubmit: onSubmitForm,
   });
-
-  const [seePassword, setSeePassword] = useState<boolean>(false);
-  const refInputPassword = useRef<InputRef>(null);
   const { values, setFieldValue } = formik;
 
-  const onChange = (
-    nameField: NAME_FORM_REGISTER,
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFieldValue(nameField, e.target.value);
+  const onChange = (nameField: NAME_FORM, e: string) => {
+    if (errorFields.find((el) => el.field === nameField)) {
+      setErrorFields((prev) => prev.filter((item) => item.field !== nameField));
+    }
+    setFieldValue(nameField, e);
   };
 
-  const handleRegisterToVerifyPhone = () => {
-    dispatch(requestOTP(values[NAME_FORM_REGISTER.PHONE]));
+  const handleRegisterToVerifyPhone = async () => {
+    dispatch(isLoading(true));
+    try {
+      const respon = await post<{
+        success: boolean;
+        message?: string;
+        error?: string;
+      }>("/auth/validate-code", {
+        phoneNumber: values.phone,
+        accessCode: otp,
+      });
+      if (respon.success) {
+        dispatch(register(values));
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      dispatch(isLoading(false));
+    }
   };
   const handelSwitchToRegister = () => {
     dispatch(switchModeRegister(false));
   };
 
+  const fetchingData = async () => {
+    try {
+      const respon = await post<{ success: boolean; message?: string }>(
+        "/auth/fetchFormRegister",
+        values
+      );
+      if (respon?.message) {
+        // const arrFieldsEmty = JSON.parse(respon?.message) as NAME_FORM[];
+        // setErrorFields(
+        //   arrFieldsEmty.map((el) => ({
+        //     field: el,
+        //     msgErr: `${
+        //       el.charAt(0).toUpperCase() + el.slice(1)
+        //     } already exists`,
+        //   }))
+        // );
+        setFieldsErrorExit(JSON.parse(respon?.message));
+      } else {
+        setFieldsErrorExit([]);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!firstTimeChangeForm.current) return;
+    fetchingData();
+  }, [values]);
+
   const renderVerifyOtp = () => (
     <div className="Form">
       <div className="ContentForm">
-        SkipliAI has sent an OTP code to: {values[NAME_FORM_REGISTER.PHONE]}
+        SkipliAI has sent an OTP code to: {values[NAME_FORM.PHONE]}
       </div>
       <div className="InputAndError">
         <input
@@ -121,7 +165,7 @@ const RegisterForm: React.FC = () => {
       </div>
       <button
         className="ButtonForm"
-        onClick={() => onSubmitForm(values)}
+        onClick={() => handleRegisterToVerifyPhone()}
         disabled={loading}
       >
         {loading ? "Submiting..." : "Submit"}
@@ -138,55 +182,32 @@ const RegisterForm: React.FC = () => {
           <div className={"containerFormFields"}>
             {elementsFormRegister.map((item, idx: number) => (
               <Fragment key={idx}>
-                {item.typeInput === TYPE_INPUT.PASSWORD ? (
-                  <Input
-                    name={item.name}
-                    ref={refInputPassword}
-                    className={"inputLogin"}
-                    size="large"
-                    placeholder={item.placeholder}
-                    prefix={item.prefix}
-                    suffix={
-                      <div
-                        className={"iconEye"}
-                        onClick={() => {
-                          setSeePassword(!seePassword);
-                          setTimeout(() => {
-                            const passwordLength = values[
-                              NAME_FORM_REGISTER.PASSWORD
-                            ]
-                              ? values[NAME_FORM_REGISTER.PASSWORD]?.length
-                              : 0;
-                            if (!refInputPassword.current) return;
-                            refInputPassword.current.setSelectionRange(
-                              passwordLength,
-                              passwordLength
-                            );
-                          }, 10);
-                        }}
-                      >
-                        {seePassword ? <Eye /> : <EyeSlash />}
-                      </div>
+                <Input
+                  name={item.name}
+                  className={"inputLogin"}
+                  placeholder={item.placeholder}
+                  prefix={item.prefix}
+                  type={item.type}
+                  onChange={(e) => {
+                    if (e !== "") {
+                      firstTimeChangeForm.current = true;
                     }
-                    type={seePassword ? "text" : "password"}
-                    onChange={(e) => onChange(item.name, e)}
-                  />
-                ) : (
-                  <Input
-                    name={item.name}
-                    className={"inputLogin"}
-                    size="large"
-                    placeholder={item.placeholder}
-                    prefix={item.prefix}
-                    onChange={(e) => onChange(item.name, e)}
-                  />
-                )}
+                    onChange(item.name, e);
+                  }}
+                  error={
+                    errorFields.length > 0 &&
+                    errorFields.find((it: MsgErr) => it.field === item.name)
+                      ? errorFields.find((it: MsgErr) => it.field === item.name)
+                          ?.msgErr
+                      : undefined
+                  }
+                />
               </Fragment>
             ))}
           </div>
           <Button
             className={"buttonLogin"}
-            onClick={() => handleRegisterToVerifyPhone()}
+            onClick={() => onSubmitForm(values)}
           >
             Register
           </Button>

@@ -86,10 +86,12 @@ export const login = createAsyncThunk(
   }) => {
     const response = await post<{
       accessToken: string;
+      phone?: string;
       message?: string;
     }>("/auth/login", bodyLogin);
     if (!response.accessToken) throw new Error("Invalid account or password");
     localStorage.setItem("loggedIn", "true");
+    if (response?.phone) localStorage.setItem("phone", response?.phone);
     return response.accessToken;
   }
 );
@@ -110,6 +112,9 @@ const authSlice = createSlice({
     switchModeRegister(state, action: PayloadAction<boolean>) {
       state.isRegister = action.payload;
     },
+    isLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -121,10 +126,13 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state) => {
         state.loading = false;
         state.isRegister = false;
+        state.otpSent = false;
+        state.isRegister = false;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.isRegister = true;
+        state.otpSent = false;
         state.error = action.error.message || "register thất bại";
       })
       // Xử lý case login
@@ -162,9 +170,11 @@ const authSlice = createSlice({
         state.loading = false;
         state.phone = action.payload;
         state.otpSent = false;
+        state.isRegister = false;
       })
       .addCase(verifyOTP.rejected, (state, action) => {
         state.loading = false;
+        state.otpSent = false;
         state.error = action.error.message || "Xác minh OTP thất bại";
       });
   },
@@ -175,5 +185,6 @@ export const {
   setAccessToken,
   clearAccessToken,
   switchModeRegister,
+  isLoading,
 } = authSlice.actions;
 export default authSlice.reducer;
