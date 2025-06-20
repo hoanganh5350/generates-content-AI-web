@@ -30,7 +30,7 @@ const RegisterForm: React.FC = () => {
   const { loading, error, otpSent } = useSelector(
     (state: RootState) => state.auth
   );
-  
+
   const elementsFormRegister = [
     {
       name: NAME_FORM.USER_NAME,
@@ -105,7 +105,7 @@ const RegisterForm: React.FC = () => {
         accessCode: otp,
       });
       if (respon.success) {
-        dispatch(register(values));
+        await dispatch(register(values));
       }
     } catch (err) {
       console.log(err);
@@ -207,6 +207,8 @@ const RegisterForm: React.FC = () => {
           </div>
           <Button
             className={"buttonLogin"}
+            color="default"
+            variant="solid"
             onClick={() => onSubmitForm(values)}
           >
             Register

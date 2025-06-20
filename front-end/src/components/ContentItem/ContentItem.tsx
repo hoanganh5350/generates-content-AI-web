@@ -18,10 +18,10 @@ const ContentItem = (props: ContentItemProps) => {
     onShare();
   };
   const handleSave = () => {
-    onSave && onSave();
+    onSave?.();
   };
   const handleUnsave = () => {
-    onUnsave && onUnsave();
+    onUnsave?.();
   };
 
   return (

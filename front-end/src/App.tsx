@@ -4,18 +4,18 @@ import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login/Login";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "./app/store";
-import {
-  clearAccessToken,
-  setAccessToken,
-} from "./features/auth/authSlice";
+import { clearAccessToken, setAccessToken } from "./features/auth/authSlice";
 import { useEffect } from "react";
 import api from "./api/axiosClient";
+import FullScreenLoading from "./components/FullScreenLoading/FullScreenLoading";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { accessToken } = useSelector((state: RootState) => state.auth);
+  const { loading, accessToken } = useSelector(
+    (state: RootState) => state.auth
+  );
   const init = async () => {
-    if (localStorage.getItem('loggedIn') !== 'true') return;
+    if (localStorage.getItem("loggedIn") !== "true") return;
     try {
       const res = await api.post("/auth/refresh-token");
       if (res.data?.accessToken) {
@@ -39,15 +39,17 @@ function App() {
     return () => clearInterval(timer);
   }, [accessToken]);
 
-  if (!accessToken) return <Login />;
-
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={<MainLayout />}
-      ></Route>
-    </Routes>
+    <>
+      {loading && <FullScreenLoading />}
+      {!accessToken ? (
+        <Login />
+      ) : (
+        <Routes>
+          <Route path="/" element={<MainLayout />}></Route>
+        </Routes>
+      )}
+    </>
   );
 }
 

@@ -99,7 +99,12 @@ const LoginForm: React.FC = () => {
           onChange={onChange}
         />
         <div className={"forgetPassword"}>Forget Password?</div>
-        <Button className={"buttonLogin"} onClick={() => handleLogin()}>
+        <Button
+          className={"buttonLogin"}
+          color="primary"
+          variant="solid"
+          onClick={() => handleLogin()}
+        >
           Login
         </Button>
         <div className={"switchRegister"}>
