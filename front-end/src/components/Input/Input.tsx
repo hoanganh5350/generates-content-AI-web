@@ -15,10 +15,11 @@ interface InputProps {
   onChange: (value: string) => void;
   disabled?: boolean;
   type?: string;
-  error?: string;
+  error?: string | boolean;
   isFocus?: (focus: boolean) => void;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  maxLength?: number;
 }
 
 const Input = (props: InputProps) => {
@@ -34,6 +35,7 @@ const Input = (props: InputProps) => {
     isFocus,
     prefix,
     suffix,
+    maxLength,
   } = props;
   const [seePassword, setSeePassword] = useState<boolean>(false);
   const refInputPassword = useRef<InputRef>(null);
@@ -62,6 +64,8 @@ const Input = (props: InputProps) => {
         if (!isFocusFirstTime.current) return;
         isFocus?.(false);
       }}
+      limitMaxLength
+      maxLength={maxLength ?? 100}
     />
   );
 
@@ -103,6 +107,8 @@ const Input = (props: InputProps) => {
         if (!isFocusFirstTime.current) return;
         isFocus?.(false);
       }}
+      maxLength={maxLength ?? 100}
+      disabled={disabled}
     />
   );
 
@@ -134,6 +140,8 @@ const Input = (props: InputProps) => {
               if (!isFocusFirstTime.current) return;
               isFocus?.(false);
             }}
+            maxLength={maxLength ?? 100}
+            disabled={disabled}
           />
         );
       }
@@ -143,7 +151,9 @@ const Input = (props: InputProps) => {
   return (
     <div className={"containerInputCustom"}>
       {mainRenderInput()}
-      {error && <div className={"errorText"}>{`* ${error}`}</div>}
+      {error && typeof error === "string" && (
+        <div className={"errorText"}>{`* ${error}`}</div>
+      )}
     </div>
   );
 };

@@ -7,7 +7,9 @@ import type { RootState, AppDispatch } from "./app/store";
 import { clearAccessToken, setAccessToken } from "./features/auth/authSlice";
 import { useEffect } from "react";
 import api from "./api/axiosClient";
+import { ToastContainer } from "react-toastify";
 import FullScreenLoading from "./components/FullScreenLoading/FullScreenLoading";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,6 +51,17 @@ function App() {
           <Route path="/" element={<MainLayout />}></Route>
         </Routes>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }

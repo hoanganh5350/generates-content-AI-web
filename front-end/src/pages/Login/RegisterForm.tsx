@@ -7,16 +7,17 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../app/store";
 import { useFormik } from "formik";
 import {
-  isLoading,
   register,
   requestOTP,
-  switchModeRegister,
+  switchModeLogin,
 } from "../../features/auth/authSlice";
-import { NAME_FORM, TYPE_INPUT } from "./constant";
+import { NAME_FORM, TYPE_INPUT } from "./type";
 import { FileText, Lock, Person, Telephone } from "react-bootstrap-icons";
 import { validateValuesFromRegister, type MsgErr } from "../helper";
 import Input from "../../components/Input/Input";
 import { post } from "../../api/http";
+import { MODE_LOGIN } from "../../features/auth/type";
+import VerifyOTP from "./VerifyOTP";
 
 type ValueForm = {
   [NAME_FORM.USER_NAME]?: string;
@@ -27,9 +28,7 @@ type ValueForm = {
 
 const RegisterForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error, otpSent } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { otpSent } = useSelector((state: RootState) => state.auth);
 
   const elementsFormRegister = [
     {
@@ -61,7 +60,7 @@ const RegisterForm: React.FC = () => {
       type: "password",
     },
   ];
-  const [otp, setOtp] = useState("");
+  // const [otp, setOtp] = useState("");
   const [fieldsErrorExit, setFieldsErrorExit] = useState<NAME_FORM[]>([]);
   const [errorFields, setErrorFields] = useState<MsgErr[]>([]);
   const firstTimeChangeForm = useRef<boolean>(false);
@@ -93,28 +92,8 @@ const RegisterForm: React.FC = () => {
     setFieldValue(nameField, e);
   };
 
-  const handleRegisterToVerifyPhone = async () => {
-    dispatch(isLoading(true));
-    try {
-      const respon = await post<{
-        success: boolean;
-        message?: string;
-        error?: string;
-      }>("/auth/validate-code", {
-        phoneNumber: values.phone,
-        accessCode: otp,
-      });
-      if (respon.success) {
-        await dispatch(register(values));
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      dispatch(isLoading(false));
-    }
-  };
   const handelSwitchToRegister = () => {
-    dispatch(switchModeRegister(false));
+    dispatch(switchModeLogin(MODE_LOGIN.LOGIN));
   };
 
   const fetchingData = async () => {
@@ -146,32 +125,6 @@ const RegisterForm: React.FC = () => {
     if (!firstTimeChangeForm.current) return;
     fetchingData();
   }, [values]);
-
-  const renderVerifyOtp = () => (
-    <div className="Form">
-      <div className="ContentForm">
-        SkipliAI has sent an OTP code to: {values[NAME_FORM.PHONE]}
-      </div>
-      <div className="InputAndError">
-        <input
-          className="InputCode"
-          type="text"
-          placeholder="Enter your code here"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          disabled={loading}
-        />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </div>
-      <button
-        className="ButtonForm"
-        onClick={() => handleRegisterToVerifyPhone()}
-        disabled={loading}
-      >
-        {loading ? "Submiting..." : "Submit"}
-      </button>
-    </div>
-  );
 
   return (
     <div className="LoginForm">
@@ -224,7 +177,12 @@ const RegisterForm: React.FC = () => {
           </div>
         </div>
       ) : (
-        renderVerifyOtp()
+        <VerifyOTP
+          phone={values.phone}
+          onSubmiting={async () => {
+            await dispatch(register(values));
+          }}
+        />
       )}
     </div>
   );

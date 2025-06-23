@@ -1,4 +1,5 @@
-import { NAME_FORM } from "./Login/constant";
+import { NAME_FORM } from "./Login/type";
+import { toast } from "react-toastify";
 
 export const isEmail = (value: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,17 +29,35 @@ export const validateValuesFromRegister = (
     if (fieldsExit && fieldsExit.includes(field as NAME_FORM) && valueFiled) {
       arrayMsgErr.push({
         field: field as NAME_FORM,
-        msgErr: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+        msgErr: `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } already exists`,
       });
     }
     if (!valueFiled) {
       arrayMsgErr.push({
         field: field as NAME_FORM,
-        msgErr: `${field.charAt(0).toUpperCase() + field.slice(1)} cannot be blank`,
+        msgErr: `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } cannot be blank`,
+      });
+    }
+
+    if (field === NAME_FORM.PASSWORD && valueFiled &&  valueFiled.length < 6) {
+      arrayMsgErr.push({
+        field: field as NAME_FORM,
+        msgErr: `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } must be at least 6 characters.`,
       });
     }
   });
-  console.log(values);
   if (arrayMsgErr.length > 0) return { success: false, errMsg: arrayMsgErr };
   return { success: true };
+};
+
+export type NotificationType = "success" | "info" | "warn" | "error";
+
+export const showNotification = (type: NotificationType, message: string) => {
+  toast[type](message);
 };

@@ -1,11 +1,13 @@
 import "./Login.scss";
-import React, { useRef, useState } from "react";
-import { Input, Button, type InputRef } from "antd/lib";
-import { NAME_FORM } from "./constant";
+import React, { useState } from "react";
+import { Button } from "antd/lib";
+import { NAME_FORM } from "./type";
 import Icon from "../../components/Icon/Icon";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../app/store";
-import { login, switchModeRegister } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../app/store";
+import { login, switchModeLogin } from "../../features/auth/authSlice";
+import { MODE_LOGIN } from "../../features/auth/type";
+import Input from "../../components/Input/Input";
 
 type ValueForm = {
   [NAME_FORM.USER_NAME]?: string;
@@ -22,15 +24,10 @@ const detectLoginField = (
 
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { error } = useSelector((state: RootState) => state.auth);
-  const [seePassword, setSeePassword] = useState<boolean>(false);
   const [valueForm, setValueForm] = useState<ValueForm>({});
-  const refInputPassword = useRef<InputRef>(null);
 
-  console.log(error);
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValueForm({ ...valueForm, [e.target.name]: e.target.value });
+  const onChange = ( name: string , e: string) => {
+    setValueForm({ ...valueForm, [name]: e });
   };
 
   const handleLogin = () => {
@@ -46,7 +43,7 @@ const LoginForm: React.FC = () => {
   };
 
   const handelSwitchToRegister = () => {
-    dispatch(switchModeRegister(true));
+    dispatch(switchModeLogin(MODE_LOGIN.REGISTER));
   };
 
   //MAIN RENDER
@@ -58,47 +55,25 @@ const LoginForm: React.FC = () => {
         <Input
           name={NAME_FORM.USER_NAME}
           className={"inputLogin"}
-          size="large"
           placeholder="Email or User name"
           prefix={<Icon iconName="person" />}
-          onChange={onChange}
+          onChange={(e) => onChange(NAME_FORM.USER_NAME, e)}
         />
 
         <Input
           name={NAME_FORM.PASSWORD}
-          ref={refInputPassword}
           className={"inputLogin"}
-          size="large"
           placeholder="Password"
           prefix={<Icon iconName="lock" />}
-          suffix={
-            <div
-              className={"iconEye"}
-              onClick={() => {
-                setSeePassword(!seePassword);
-                setTimeout(() => {
-                  const passwordLength = valueForm[NAME_FORM.PASSWORD]
-                    ? valueForm[NAME_FORM.PASSWORD]?.length
-                    : 0;
-                  if (!refInputPassword.current) return;
-                  refInputPassword.current.setSelectionRange(
-                    passwordLength,
-                    passwordLength
-                  );
-                }, 10);
-              }}
-            >
-              {seePassword ? (
-                <Icon iconName="eye" />
-              ) : (
-                <Icon iconName="eyeSlash" />
-              )}
-            </div>
-          }
-          type={seePassword ? "text" : "password"}
-          onChange={onChange}
+          type={"password"}
+          onChange={(e) => onChange(NAME_FORM.PASSWORD, e)}
         />
-        <div className={"forgetPassword"}>Forget Password?</div>
+        <div
+          className={"forgetPassword"}
+          onClick={() => dispatch(switchModeLogin(MODE_LOGIN.FORGET_PASSWORD))}
+        >
+          Forget Password?
+        </div>
         <Button
           className={"buttonLogin"}
           color="primary"

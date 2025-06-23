@@ -66,3 +66,11 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.Toastify__toast {
+  font-size: 12px !important;
+}
+
+button:focus {
+  outline: none !important;
+}

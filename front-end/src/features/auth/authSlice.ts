@@ -4,10 +4,12 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { post } from "../../api/http";
+import { MODE_LOGIN } from "./type";
+import { showNotification } from "../../pages/helper";
 
 interface AuthState {
   accessToken: string | null;
-  isRegister: boolean;
+  modeLogin: MODE_LOGIN;
   phone: string | null;
   otpSent: boolean;
   loading: boolean;
@@ -16,7 +18,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  isRegister: false,
+  modeLogin: MODE_LOGIN.LOGIN,
   phone: localStorage.getItem("phone") || null,
   otpSent: false,
   loading: false,
@@ -101,7 +103,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     registerAction: (state) => {
-      state.isRegister = true;
+      state.modeLogin = MODE_LOGIN.REGISTER;
     },
     setAccessToken(state, action: PayloadAction<string>) {
       state.accessToken = action.payload;
@@ -109,8 +111,8 @@ const authSlice = createSlice({
     clearAccessToken(state) {
       state.accessToken = null;
     },
-    switchModeRegister(state, action: PayloadAction<boolean>) {
-      state.isRegister = action.payload;
+    switchModeLogin(state, action: PayloadAction<MODE_LOGIN>) {
+      state.modeLogin = action.payload;
     },
     isLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -125,15 +127,16 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state) => {
         state.loading = false;
-        state.isRegister = false;
+        state.modeLogin = MODE_LOGIN.LOGIN;
         state.otpSent = false;
-        state.isRegister = false;
+        showNotification("success", "Registration successful, please login!");
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.isRegister = true;
+        state.modeLogin = MODE_LOGIN.REGISTER;
         state.otpSent = false;
-        state.error = action.error.message || "register thất bại";
+        state.error = action.error.message || "Register failed!";
+        showNotification("error", action.error.message || "Register failed!");
       })
       // Xử lý case login
       .addCase(login.pending, (state) => {
@@ -143,10 +146,12 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action: PayloadAction<string>) => {
         state.accessToken = action.payload;
         state.loading = false;
+        showNotification("success", "Log in successfully!");
       })
       .addCase(login.rejected, (state) => {
         state.loading = false;
         state.error = "Invalid account or password";
+        showNotification("error", "Invalid account or password");
       })
       // Xử lý case khi nhập sđt để lấy otp
       .addCase(requestOTP.pending, (state) => {
@@ -159,7 +164,7 @@ const authSlice = createSlice({
       })
       .addCase(requestOTP.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Gửi OTP thất bại";
+        state.error = action.error.message || "OTP sending failed";
       })
       // Xử lysc case xác minh otp với sdt
       .addCase(verifyOTP.pending, (state) => {
@@ -170,12 +175,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.phone = action.payload;
         state.otpSent = false;
-        state.isRegister = false;
+        state.modeLogin = MODE_LOGIN.LOGIN;
       })
       .addCase(verifyOTP.rejected, (state, action) => {
         state.loading = false;
         state.otpSent = false;
-        state.error = action.error.message || "Xác minh OTP thất bại";
+        state.error = action.error.message || "OTP verification failed";
       });
   },
 });
@@ -184,7 +189,7 @@ export const {
   registerAction,
   setAccessToken,
   clearAccessToken,
-  switchModeRegister,
+  switchModeLogin,
   isLoading,
 } = authSlice.actions;
 export default authSlice.reducer;

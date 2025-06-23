@@ -14,11 +14,34 @@ import { hashPassword } from "../utils/hashPassword";
 
 export const createNewAccessCode = async (req: Request, res: Response) => {
   try {
-    const { phoneNumber } = req.body;
-    // const code = generateAccessCode();
+    const { phoneNumber, isHasSigned } = req.body;
+    const code = generateAccessCode();
     //TODO: Hard otp for demo
-    const code = "123456";
+    // const code = "123456";
     const expiresAt = Date.now() + 5 * 60 * 1000;
+    if (isHasSigned) {
+      const snapshot = await firestore
+        .collection("user")
+        .where("phone", "==", phoneNumber)
+        .get();
+      if (snapshot.empty) {
+        res.status(404).json({ message: "Missing login information" });
+        return;
+      }
+      const dataUser = snapshot.docs[0];
+      if (!dataUser?.exists) {
+        res.status(404).json({ message: "Account does not exist" });
+        return;
+      }
+      const { password: hashedPassword, ...userInfo } = dataUser.data();
+      const dataUserRes = { id: dataUser.id, ...userInfo } as UserPayload;
+      await firestore.collection("accessCodes").doc(phoneNumber).set({
+        code,
+        expiresAt,
+      });
+      res.status(200).json({ success: true, dataUser: dataUserRes, code });
+      return;
+    }
     await firestore.collection("accessCodes").doc(phoneNumber).set({
       code,
       expiresAt,
@@ -137,7 +160,7 @@ export const login = async (req: Request, res: Response) => {
     const { password: plainPassword, ...rest } = req.body;
     const fieldLogin = Object.keys(rest)[0];
     if (!fieldLogin) {
-      res.status(400).json({ message: "Thiếu thông tin đăng nhập" });
+      res.status(400).json({ message: "Missing login information" });
       return;
     }
     const snapshot = await firestore
@@ -145,19 +168,19 @@ export const login = async (req: Request, res: Response) => {
       .where(fieldLogin, "==", rest[fieldLogin])
       .get();
     if (snapshot.empty) {
-      res.status(404).json({ message: "Tài khoản không tồn tại" });
+      res.status(404).json({ message: "Account does not exist" });
       return;
     }
     const dataUser = snapshot.docs[0];
     if (!dataUser?.exists) {
-      res.status(404).json({ message: "Người dùng không tồn tại" });
+      res.status(404).json({ message: "User does not exist" });
       return;
     }
 
     const { password: hashedPassword, ...userInfo } = dataUser.data();
     const verifyPassword = await checkPassword(plainPassword, hashedPassword);
     if (!verifyPassword) {
-      res.status(401).json({ message: "Sai mat khau" });
+      res.status(401).json({ message: "Wrong password" });
       return;
     }
     const user = { id: dataUser.id, ...userInfo } as UserPayload;
@@ -208,4 +231,17 @@ export const checkRefreshToken = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie("refreshToken", { path: "/auth/refresh-token" });
   res.sendStatus(204);
+};
+
+export const changedPassword = async (req: Request, res: Response) => {
+  try {
+    const { userId, newPassword } = req.body;
+    const newPasswordHash = await hashPassword(newPassword);
+    await firestore.collection("user").doc(userId).update({
+      password: newPasswordHash,
+    });
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
