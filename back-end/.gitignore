@@ -3,9 +3,8 @@ node_modules/
 
 # Env files
 .env
+*.docker
 
-# Firebase service account key
-src/config/firebaseServiceAccountKey.json
 
 # Logs
 logs/

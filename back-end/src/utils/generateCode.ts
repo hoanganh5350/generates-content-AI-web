@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { UserPayload } from './type';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: ".env" });
 
 
 export const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET!;

@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  frontend:
+    build: ./front-end
+    ports:
+      - "3000:80"
+    env_file:
+      - ./front-end/.env.docker
+    depends_on:
+      - backend
+
+  backend:
+    build: ./back-end
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./back-end/.env.docker

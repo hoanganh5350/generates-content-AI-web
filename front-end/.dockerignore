@@ -1,0 +1,24 @@
+# Bỏ node_modules - sẽ install lại bên trong container
+node_modules
+**/node_modules
+
+# Bỏ thư mục build (nếu build lại bên trong Docker)
+build
+dist
+
+# # Bỏ file cấu hình môi trường - tránh lộ secret
+# .env
+# .env.*
+
+# Git & hệ thống
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# File log hoặc output tạm
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
