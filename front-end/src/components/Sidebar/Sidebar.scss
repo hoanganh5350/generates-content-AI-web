@@ -49,9 +49,7 @@
 }
 
 .logout {
-  position: absolute;
-  bottom: 24px;
-  width: calc(100% - 56px);
+  margin-top: auto;
   &:hover {
     background-color: variables.$menu-hover;
   }
